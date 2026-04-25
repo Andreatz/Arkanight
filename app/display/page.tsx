@@ -1,11 +1,11 @@
 "use client";
- 
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { getSupabase, type Poll } from "@/lib/supabase";
- 
+
 type Counts = Record<number, number>;
- 
+
 export default function DisplayPage() {
   const supabase = useMemo(() => getSupabase(), []);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -14,7 +14,7 @@ export default function DisplayPage() {
   const [voteUrl, setVoteUrl] = useState<string>("");
   const [now, setNow] = useState<string>("");
   const flashRef = useRef<HTMLDivElement>(null);
- 
+
   // Build QR
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -27,7 +27,7 @@ export default function DisplayPage() {
       errorCorrectionLevel: "H",
     }).then(setQrDataUrl);
   }, []);
- 
+
   // Clock
   useEffect(() => {
     const tick = () => {
@@ -41,7 +41,7 @@ export default function DisplayPage() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
- 
+
   // Load active poll + counts
   const loadActive = async () => {
     const { data } = await supabase
@@ -65,12 +65,12 @@ export default function DisplayPage() {
       setCounts({});
     }
   };
- 
+
   useEffect(() => {
     loadActive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
   // Realtime: react to vote inserts on the active poll
   useEffect(() => {
     if (!poll) return;
@@ -103,7 +103,7 @@ export default function DisplayPage() {
       supabase.removeChannel(ch);
     };
   }, [poll, supabase]);
- 
+
   // Realtime: react to poll activation changes
   useEffect(() => {
     const ch = supabase
@@ -119,12 +119,12 @@ export default function DisplayPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
   const total = useMemo(
     () => Object.values(counts).reduce((a, b) => a + b, 0),
     [counts]
   );
- 
+
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-ink-950">
       {/* Flash overlay on new vote */}
@@ -132,7 +132,7 @@ export default function DisplayPage() {
         ref={flashRef}
         className="pointer-events-none absolute inset-0 z-50 bg-brand/10 opacity-0 transition-opacity duration-150"
       />
- 
+
       {/* Ambient orbs */}
       <div
         className="orb"
@@ -155,7 +155,7 @@ export default function DisplayPage() {
           opacity: 0.3,
         }}
       />
- 
+
       {/* Grid bg */}
       <div
         aria-hidden
@@ -166,7 +166,7 @@ export default function DisplayPage() {
           backgroundSize: "80px 80px",
         }}
       />
- 
+
       {/* Top bar */}
       <header className="relative z-10 flex items-center justify-between border-b border-white/10 px-12 py-6">
         <div className="flex items-center gap-6">
@@ -194,7 +194,7 @@ export default function DisplayPage() {
           </div>
         </div>
       </header>
- 
+
       {/* Body */}
       {poll ? (
         <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-10">
@@ -206,11 +206,11 @@ export default function DisplayPage() {
               </span>
               <span>RISPONDI DAL TUO TELEFONO</span>
             </div>
- 
+
             <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.95] text-white">
               {poll.question}
             </h2>
- 
+
             <div className="mt-10 flex-1 space-y-5 overflow-hidden">
               {poll.options.map((opt, idx) => {
                 const c = counts[idx] ?? 0;
@@ -265,7 +265,7 @@ export default function DisplayPage() {
                 );
               })}
             </div>
- 
+
             <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
               <div className="text-xs uppercase tracking-[0.3em] text-ink-400">
                 TOTALE VOTI
@@ -275,7 +275,7 @@ export default function DisplayPage() {
               </div>
             </div>
           </div>
- 
+
           {/* RIGHT: QR */}
           <div className="col-span-4 flex flex-col items-center justify-center border-l border-white/10 pl-10">
             <div className="text-center">
