@@ -89,10 +89,8 @@ export default function HomePage() {
 
           <h1 className="font-display text-[clamp(3.5rem,14vw,12rem)] leading-[0.85] tracking-tight">
             <span className="block animate-glitch text-neon glow-neon">
-              ARKANIGHT
-            </span>
-            <span className="block text-white/95" style={{ marginLeft: "0.4em" }}>
-              LIVE
+              ARKA
+              NIGHT
             </span>
           </h1>
 
