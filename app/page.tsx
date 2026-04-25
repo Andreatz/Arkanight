@@ -122,35 +122,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stat bar */}
-      <section className="relative z-10 mt-16 border-y border-white/5 bg-ink-900/40 backdrop-blur sm:mt-24">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-stretch divide-y divide-white/5 sm:divide-x sm:divide-y-0">
-          {[
-            { k: "PIATTAFORME", v: "03" },
-            { k: "SONDAGGI LIVE", v: "∞" },
-            { k: "TIMEZONE", v: "CET" },
-            { k: "STATUS", v: "ON AIR" },
-          ].map((s, i) => (
-            <div
-              key={s.k}
-              className="flex-1 px-6 py-6 sm:px-10"
-              style={{ animation: `rise .6s ${i * 0.1}s both` }}
-            >
-              <div className="text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
-                {s.k}
-              </div>
-              <div
-                className={`mt-2 font-head text-3xl ${
-                  s.k === "STATUS" ? "text-magenta glow-magenta animate-flicker" : "text-white"
-                }`}
-              >
-                {s.v}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Socials */}
       <section className="relative z-10 px-6 py-20 sm:px-10">
         <div className="mx-auto max-w-6xl">
@@ -158,7 +129,7 @@ export default function HomePage() {
             <h2 className="font-head text-4xl uppercase tracking-wider text-white sm:text-6xl">
               Dove
               <br />
-              <span className="text-neon">trovarmi</span>
+              <span className="text-neon">trovarci</span>
             </h2>
             <div className="hidden h-px flex-1 bg-gradient-to-r from-neon/60 to-transparent sm:block" />
           </div>
