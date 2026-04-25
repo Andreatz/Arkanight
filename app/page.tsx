@@ -103,10 +103,13 @@ export default function HomePage() {
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
             <p className="lg:col-span-7 max-w-2xl text-base leading-relaxed text-ink-300 sm:text-lg">
               Benvenuti nella tana digitale di{" "}
-              <span className="text-brand">arkanight</span>. Streaming
-              quotidiano, community caotica, e — quando ci vediamo dal vivo —
-              sondaggi in tempo reale per decidere insieme cosa succede sullo
-              schermo.
+              <span className="text-brand">Arkanight</span>. IL MIGLIOR TRIO DEL WEB!
+              Siamo tre millennial di Roma con un talento naturale nel non essere mai d'accordo:
+              🎙️ LIVIO 🎙️ Youtuber dal 2009 e streamer dal 2019, ma vecchio dentro dalla nascita
+              🧙 MELIADOR🧙 Campione mondiale di giochi di strategia e di fanboysmo su Star Wars e HxH
+              💪 MAGGI 💪 Personal trainer ombroso e tenebroso, fissato con la semantica e i buchi di trama
+              Se vuoi esplorare i nostri contenuti, puoi cominciare dalla Home o dalla sezione Podcast.
+              Seguici in live ogni sera alle 21 su Twitch, e su tutti gli altri social dai link qui sotto!
             </p>
 
             <div className="lg:col-span-5 lg:justify-self-end">
@@ -129,34 +132,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stat bar */}
-      <section className="relative z-10 mt-16 border-y border-white/5 bg-ink-900/40 backdrop-blur sm:mt-24">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-stretch divide-y divide-white/5 sm:divide-x sm:divide-y-0">
-          {[
-            { k: "PIATTAFORME", v: "03" },
-            { k: "SONDAGGI LIVE", v: "∞" },
-            { k: "TIMEZONE", v: "CET" },
-            { k: "STATUS", v: "ON AIR" },
-          ].map((s, i) => (
-            <div
-              key={s.k}
-              className="flex-1 px-6 py-6 sm:px-10"
-              style={{ animation: `rise .6s ${i * 0.1}s both` }}
-            >
-              <div className="text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
-                {s.k}
-              </div>
-              <div
-                className={`mt-2 font-head text-3xl ${
-                  s.k === "STATUS" ? "text-amber glow-amber animate-flicker" : "text-white"
-                }`}
-              >
-                {s.v}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Socials */}
       <section className="relative z-10 px-6 py-20 sm:px-10">
@@ -165,7 +140,7 @@ export default function HomePage() {
             <h2 className="font-head text-4xl uppercase tracking-wider text-white sm:text-6xl">
               Dove
               <br />
-              <span className="text-brand">trovarmi</span>
+              <span className="text-brand">trovarci</span>
             </h2>
             <div className="hidden h-px flex-1 bg-gradient-to-r from-brand/60 to-transparent sm:block" />
           </div>
@@ -231,6 +206,34 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+    </main>
+  );
+}
+
+function Wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="relative flex min-h-screen flex-col px-5 py-8 sm:px-8 sm:py-12">
+      <div
+        className="orb"
+        style={{
+          width: 400,
+          height: 400,
+          background: "var(--brand)",
+          top: "-100px",
+          right: "-100px",
+          opacity: 0.25,
+        }}
+      />
+      <header className="mb-10 flex items-center justify-between gap-3">
+        <Brand size="sm" />
+        <div className="flex items-center gap-3">
+          <span className="hidden text-[0.6rem] uppercase tracking-[0.3em] text-ink-400 sm:inline">
+            // VOTE.PANEL
+          </span>
+          <BackHomeButton />
+        </div>
+      </header>
+      <div className="flex flex-1 items-center">{children}</div>
     </main>
   );
 }

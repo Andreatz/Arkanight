@@ -18,7 +18,7 @@ export default {
           300: "#A0A0B0",
         },
         brand: "#EF423E",
-        amber: "#FFB627",
+        amber: "#7200f4",
         bone: "#F5F1E8",
       },
       fontFamily: {
@@ -41,7 +41,7 @@ export default {
         },
         glitch: {
           "0%, 96%, 100%": { transform: "translate(0)", filter: "none" },
-          "97%": { transform: "translate(-2px, 1px)", filter: "hue-rotate(90deg)" },
+          "97%": { transform: "translate(-2px, 1px)", filter: "hue-rotate(180deg)" },
           "98%": { transform: "translate(2px, -1px)" },
           "99%": { transform: "translate(-1px, 0)" },
         },
