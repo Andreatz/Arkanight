@@ -17,9 +17,9 @@ export default {
           400: "#7A7A8C",
           300: "#A0A0B0",
         },
-        neon: "#C8FF00",
-        magenta: "#FF2E63",
-        cyan: "#00E0FF",
+        neon: "#ff1500",
+        magenta: "#352eff",
+        cyan: "#eaff00",
       },
       fontFamily: {
         display: ['"Monoton"', "system-ui", "sans-serif"],
