@@ -105,10 +105,7 @@ export default function HomePage() {
             <p className="lg:col-span-7 max-w-2xl text-base leading-relaxed text-ink-300 sm:text-lg">
               Benvenuti nella tana digitale di{" "}
               <span className="text-brand">Arkanight</span>. IL MIGLIOR TRIO DEL WEB!
-              Siamo tre millennial di Roma con un talento naturale nel non essere mai d'accordo:
-              🎙️ LIVIO 🎙️ Youtuber dal 2009 e streamer dal 2019, ma vecchio dentro dalla nascita
-              🧙 MELIADOR🧙 Campione mondiale di giochi di strategia e di fanboysmo su Star Wars e HxH
-              💪 MAGGI 💪 Personal trainer ombroso e tenebroso, fissato con la semantica e i buchi di trama
+              Siamo tre millennial di Roma con un talento naturale nel non essere mai d'accordo.
               Se vuoi esplorare i nostri contenuti, puoi cominciare dalla Home o dalla sezione Podcast.
               Seguici in live ogni sera alle 21 su Twitch, e su tutti gli altri social dai link qui sotto!
             </p>
