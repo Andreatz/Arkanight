@@ -42,7 +42,7 @@ export function Brand({
         <span
           className={`font-display ${s.word} leading-none text-brand glow-brand`}
         >
-          ARKA
+          ARKANIGHT
         </span>
       )}
     </span>
