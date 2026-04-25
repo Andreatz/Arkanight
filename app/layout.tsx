@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ARKANIGHT // LIVE",
   description:
-    "Sito ufficiale di Arkanight — streaming, contenuti e sondaggi live durante gli eventi.",
+    "Sito ufficiale di Arkanight",
   openGraph: {
     title: "ARKANIGHT // LIVE",
     description: "Vota in diretta con Arkanight all'evento.",

@@ -89,20 +89,17 @@ export default function HomePage() {
 
           <h1 className="font-display text-[clamp(3.5rem,14vw,12rem)] leading-[0.85] tracking-tight">
             <span className="block animate-glitch text-neon glow-neon">
-              ARKA
+              ARKANIGHT
             </span>
             <span className="block text-white/95" style={{ marginLeft: "0.4em" }}>
-              NIGHT
+              LIVE
             </span>
           </h1>
 
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
             <p className="lg:col-span-7 max-w-2xl text-base leading-relaxed text-ink-300 sm:text-lg">
               Benvenuti nella tana digitale di{" "}
-              <span className="text-neon">arkanight</span>. Streaming
-              quotidiano, community caotica, e — quando ci vediamo dal vivo —
-              sondaggi in tempo reale per decidere insieme cosa succede sullo
-              schermo.
+              <span className="text-neon">Arkanight</span>.
             </p>
 
             <div className="lg:col-span-5 lg:justify-self-end">
