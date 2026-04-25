@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "@/components/Brand";
+import { BackHomeButton } from "@/components/Brand";
 
 export const dynamic = "force-dynamic";
 
