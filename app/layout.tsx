@@ -1,21 +1,48 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arkanight.vercel.app";
+
 export const metadata: Metadata = {
-  title: "ARKANIGHT // LIVE",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "ARKANIGHT // LIVE",
+    template: "%s — ARKANIGHT",
+  },
   description:
-    "Sito ufficiale di Arkanight",
+    "Sito ufficiale di Arkanight — streaming, contenuti e sondaggi live durante gli eventi.",
+  applicationName: "Arkanight",
+  authors: [{ name: "Arkanight" }],
+  keywords: ["arkanight", "streamer", "twitch", "comicon", "live", "voting"],
   openGraph: {
     title: "ARKANIGHT // LIVE",
     description: "Vota in diretta con Arkanight all'evento.",
     type: "website",
+    url: SITE_URL,
+    siteName: "Arkanight",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Arkanight — Streamer Live Voting",
+      },
+    ],
+    locale: "it_IT",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ARKANIGHT // LIVE",
+    description: "Vota in diretta con Arkanight all'evento.",
+    images: ["/og-image.jpg"],
   },
   icons: {
     icon: [
-      {
-        url: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 fill=%22%230A0A0F%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-family=%22Anton, Impact, sans-serif%22 font-size=%2220%22 fill=%22%23C8FF00%22>A</text></svg>",
-      },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
 };
 

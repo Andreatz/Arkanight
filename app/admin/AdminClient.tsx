@@ -140,19 +140,19 @@ export default function AdminClient() {
             Benvenuto nel
           </div>
           <h1 className="mt-1 font-head text-5xl uppercase text-white sm:text-6xl">
-            <span className="text-neon glow-neon">CONTROL</span> ROOM
+            <span className="text-brand glow-brand">CONTROL</span> ROOM
           </h1>
         </div>
         <button
           onClick={logout}
-          className="border border-white/15 px-4 py-2 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-magenta hover:text-magenta"
+          className="border border-white/15 px-4 py-2 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-amber hover:text-amber"
         >
           Logout →
         </button>
       </div>
 
       {error && (
-        <div className="mb-6 border border-magenta/60 bg-magenta/10 p-3 text-xs text-magenta">
+        <div className="mb-6 border border-amber/60 bg-amber/10 p-3 text-xs text-amber">
           ⚠ {error}
         </div>
       )}
@@ -160,7 +160,7 @@ export default function AdminClient() {
       {/* Create form */}
       <section className="mb-12 border border-white/10 bg-ink-900 p-6 sm:p-8">
         <div className="mb-6 flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
-          <span className="text-neon">+</span>
+          <span className="text-brand">+</span>
           NUOVO SONDAGGIO
         </div>
 
@@ -174,7 +174,7 @@ export default function AdminClient() {
               onChange={(e) => setQuestion(e.target.value)}
               maxLength={140}
               placeholder="Es. Quale gioco facciamo dopo?"
-              className="mt-2 block w-full border border-white/15 bg-ink-950 px-4 py-3 font-head text-2xl uppercase text-white outline-none transition focus:border-neon"
+              className="mt-2 block w-full border border-white/15 bg-ink-950 px-4 py-3 font-head text-2xl uppercase text-white outline-none transition focus:border-brand"
               required
             />
           </div>
@@ -198,13 +198,13 @@ export default function AdminClient() {
                     }}
                     maxLength={60}
                     placeholder={`Opzione ${i + 1}`}
-                    className="flex-1 border border-white/15 bg-ink-950 px-4 py-2.5 font-mono text-white outline-none transition focus:border-neon"
+                    className="flex-1 border border-white/15 bg-ink-950 px-4 py-2.5 font-mono text-white outline-none transition focus:border-brand"
                   />
                   {options.length > 2 && (
                     <button
                       type="button"
                       onClick={() => setOptions(options.filter((_, j) => j !== i))}
-                      className="border border-white/15 px-3 text-ink-400 hover:border-magenta hover:text-magenta"
+                      className="border border-white/15 px-3 text-ink-400 hover:border-amber hover:text-amber"
                       aria-label="Rimuovi"
                     >
                       ×
@@ -217,7 +217,7 @@ export default function AdminClient() {
               <button
                 type="button"
                 onClick={() => setOptions([...options, ""])}
-                className="mt-3 text-xs uppercase tracking-[0.25em] text-ink-400 hover:text-neon"
+                className="mt-3 text-xs uppercase tracking-[0.25em] text-ink-400 hover:text-brand"
               >
                 + Aggiungi opzione
               </button>
@@ -227,7 +227,7 @@ export default function AdminClient() {
           <button
             type="submit"
             disabled={creating}
-            className="brackets w-full border border-neon bg-neon px-6 py-3 font-head text-xl uppercase tracking-wider text-ink-950 transition hover:bg-neon/90 disabled:opacity-50 sm:w-auto"
+            className="brackets w-full border border-brand bg-brand px-6 py-3 font-head text-xl uppercase tracking-wider text-ink-950 transition hover:bg-brand/90 disabled:opacity-50 sm:w-auto"
           >
             {creating ? "CREAZIONE..." : "CREA SONDAGGIO →"}
           </button>
@@ -238,13 +238,13 @@ export default function AdminClient() {
       <section>
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-head text-3xl uppercase text-white">
-            <span className="text-neon">//</span> SONDAGGI
+            <span className="text-brand">//</span> SONDAGGI
           </h2>
           <a
             href="/display"
             target="_blank"
             rel="noreferrer"
-            className="text-xs uppercase tracking-[0.25em] text-ink-300 hover:text-neon"
+            className="text-xs uppercase tracking-[0.25em] text-ink-300 hover:text-brand"
           >
             Apri display ↗
           </a>
@@ -298,7 +298,7 @@ function PollRow({
     <div
       className={`border bg-ink-900 p-5 transition ${
         poll.is_active
-          ? "border-neon box-glow-neon"
+          ? "border-brand box-glow-brand"
           : "border-white/10"
       }`}
     >
@@ -306,8 +306,8 @@ function PollRow({
         <div className="min-w-0">
           <div className="mb-1 flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em]">
             {poll.is_active ? (
-              <span className="flex items-center gap-2 text-neon">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-neon" />
+              <span className="flex items-center gap-2 text-brand">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand" />
                 LIVE · {total} {total === 1 ? "voto" : "voti"}
               </span>
             ) : (
@@ -325,27 +325,27 @@ function PollRow({
           {poll.is_active ? (
             <button
               onClick={onDeactivate}
-              className="border border-magenta/60 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-magenta hover:bg-magenta/10"
+              className="border border-amber/60 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-amber hover:bg-amber/10"
             >
               ◼ Stop
             </button>
           ) : (
             <button
               onClick={onActivate}
-              className="border border-neon bg-neon px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-950 hover:bg-neon/90"
+              className="border border-brand bg-brand px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-950 hover:bg-brand/90"
             >
               ▶ Attiva
             </button>
           )}
           <button
             onClick={onReset}
-            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-cyan hover:text-cyan"
+            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-bone hover:text-bone"
           >
             ↻ Reset voti
           </button>
           <button
             onClick={onDelete}
-            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-magenta hover:text-magenta"
+            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-amber hover:text-amber"
           >
             ✕
           </button>
@@ -366,7 +366,7 @@ function PollRow({
               </div>
               <div className="flex items-baseline gap-3">
                 <span className="font-mono text-xs text-ink-400">{c}</span>
-                <span className="font-mono text-sm text-neon tabular-nums">{pct}%</span>
+                <span className="font-mono text-sm text-brand tabular-nums">{pct}%</span>
               </div>
             </div>
           );

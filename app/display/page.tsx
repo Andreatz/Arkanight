@@ -23,7 +23,7 @@ export default function DisplayPage() {
     QRCode.toDataURL(url, {
       margin: 1,
       width: 600,
-      color: { dark: "#0A0A0F", light: "#C8FF00" },
+      color: { dark: "#0A0A0F", light: "#EF423E" },
       errorCorrectionLevel: "H",
     }).then(setQrDataUrl);
   }, []);
@@ -130,7 +130,7 @@ export default function DisplayPage() {
       {/* Flash overlay on new vote */}
       <div
         ref={flashRef}
-        className="pointer-events-none absolute inset-0 z-50 bg-neon/10 opacity-0 transition-opacity duration-150"
+        className="pointer-events-none absolute inset-0 z-50 bg-brand/10 opacity-0 transition-opacity duration-150"
       />
 
       {/* Ambient orbs */}
@@ -139,7 +139,7 @@ export default function DisplayPage() {
         style={{
           width: 800,
           height: 800,
-          background: "var(--neon)",
+          background: "var(--brand)",
           top: "-300px",
           right: "-200px",
         }}
@@ -149,7 +149,7 @@ export default function DisplayPage() {
         style={{
           width: 700,
           height: 700,
-          background: "var(--magenta)",
+          background: "var(--amber)",
           bottom: "-300px",
           left: "-200px",
           opacity: 0.3,
@@ -162,7 +162,7 @@ export default function DisplayPage() {
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(var(--neon) 1px, transparent 1px), linear-gradient(90deg, var(--neon) 1px, transparent 1px)",
+            "linear-gradient(var(--brand) 1px, transparent 1px), linear-gradient(90deg, var(--brand) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
         }}
       />
@@ -170,18 +170,24 @@ export default function DisplayPage() {
       {/* Top bar */}
       <header className="relative z-10 flex items-center justify-between border-b border-white/10 px-12 py-6">
         <div className="flex items-center gap-6">
-          <h1 className="font-display text-5xl text-neon glow-neon animate-flicker">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Arkanight"
+            className="h-16 w-16 shrink-0"
+          />
+          <h1 className="font-display text-5xl text-brand glow-brand animate-flicker">
             ARKANIGHT
           </h1>
           <div className="border-l border-white/10 pl-6 text-xs uppercase tracking-[0.3em] text-ink-300">
             <div>LIVE BROADCAST</div>
-            <div className="mt-1 text-magenta">// COMICON EDITION</div>
+            <div className="mt-1 text-amber">// COMICON EDITION</div>
           </div>
         </div>
         <div className="flex items-center gap-8">
           <div className="text-right text-xs uppercase tracking-[0.3em] text-ink-300">
             <div className="flex items-center justify-end gap-2">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-magenta" />
+              <span className="h-2 w-2 animate-pulse rounded-full bg-amber" />
               ON AIR
             </div>
             <div className="mt-1 font-mono text-ink-400">{now}</div>
@@ -195,7 +201,7 @@ export default function DisplayPage() {
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
             <div className="mb-6 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-ink-400">
-              <span className="border border-magenta/40 bg-magenta/10 px-3 py-1 text-magenta">
+              <span className="border border-amber/40 bg-amber/10 px-3 py-1 text-amber">
                 LIVE POLL
               </span>
               <span>RISPONDI DAL TUO TELEFONO</span>
@@ -221,14 +227,14 @@ export default function DisplayPage() {
                       <div className="flex items-center gap-4">
                         <span
                           className={`font-mono text-sm ${
-                            isLeading ? "text-neon" : "text-ink-400"
+                            isLeading ? "text-brand" : "text-ink-400"
                           }`}
                         >
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <span
                           className={`font-head text-3xl uppercase tracking-wide ${
-                            isLeading ? "text-neon glow-neon" : "text-white"
+                            isLeading ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
                           {opt}
@@ -240,7 +246,7 @@ export default function DisplayPage() {
                         </span>
                         <span
                           className={`font-head text-4xl tabular-nums ${
-                            isLeading ? "text-neon glow-neon" : "text-white"
+                            isLeading ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
                           {Math.round(pct)}%
@@ -264,7 +270,7 @@ export default function DisplayPage() {
               <div className="text-xs uppercase tracking-[0.3em] text-ink-400">
                 TOTALE VOTI
               </div>
-              <div className="font-head text-5xl text-neon glow-neon tabular-nums">
+              <div className="font-head text-5xl text-brand glow-brand tabular-nums">
                 {String(total).padStart(3, "0")}
               </div>
             </div>
@@ -276,7 +282,7 @@ export default function DisplayPage() {
               <div className="mb-6 text-xs uppercase tracking-[0.3em] text-ink-400">
                 // SCANSIONA PER VOTARE
               </div>
-              <div className="brackets relative inline-block bg-neon p-4 text-neon">
+              <div className="brackets relative inline-block bg-brand p-4 text-brand">
                 {qrDataUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -285,14 +291,14 @@ export default function DisplayPage() {
                     className="block h-[320px] w-[320px]"
                   />
                 ) : (
-                  <div className="h-[320px] w-[320px] animate-pulse bg-neon/50" />
+                  <div className="h-[320px] w-[320px] animate-pulse bg-brand/50" />
                 )}
               </div>
               <div className="mt-6 font-mono text-xs text-ink-300 break-all">
                 {voteUrl.replace(/^https?:\/\//, "")}
               </div>
-              <div className="mt-8 inline-flex items-center gap-3 border border-magenta/60 bg-magenta/10 px-4 py-2 text-magenta">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-magenta" />
+              <div className="mt-8 inline-flex items-center gap-3 border border-amber/60 bg-amber/10 px-4 py-2 text-amber">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
                 <span className="font-head text-lg uppercase tracking-wider">
                   Vota Ora
                 </span>
@@ -306,7 +312,7 @@ export default function DisplayPage() {
             // STANDBY
           </div>
           <div className="text-center">
-            <h2 className="font-display text-[clamp(4rem,12vw,11rem)] leading-none text-neon glow-neon animate-flicker">
+            <h2 className="font-display text-[clamp(4rem,12vw,11rem)] leading-none text-brand glow-brand animate-flicker">
               READY
             </h2>
             <p className="mt-6 font-head text-3xl uppercase text-white">
@@ -316,7 +322,7 @@ export default function DisplayPage() {
               Scansiona il QR per essere pronto a votare
             </p>
           </div>
-          <div className="brackets relative bg-neon p-3 text-neon">
+          <div className="brackets relative bg-brand p-3 text-brand">
             {qrDataUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img

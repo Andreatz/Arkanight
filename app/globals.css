@@ -8,9 +8,9 @@
   --ink-950: #0a0a0f;
   --ink-900: #13131a;
   --ink-800: #1c1c26;
-  --neon: #ff1500;
-  --magenta: #352eff;
-  --cyan: #eaff00;
+  --brand: #ef423e;
+  --amber: #ffb627;
+  --bone: #f5f1e8;
 }
 
 * {
@@ -26,8 +26,8 @@ body {
 }
 
 ::selection {
-  background: var(--neon);
-  color: var(--ink-950);
+  background: var(--brand);
+  color: var(--bone);
 }
 
 /* Grain overlay */
@@ -59,19 +59,19 @@ body {
 }
 
 /* Glow utilities */
-.glow-neon {
-  text-shadow: 0 0 8px rgba(200, 255, 0, 0.55), 0 0 24px rgba(200, 255, 0, 0.25);
+.glow-brand {
+  text-shadow: 0 0 8px rgba(239, 66, 62, 0.6), 0 0 24px rgba(239, 66, 62, 0.3);
 }
-.glow-magenta {
-  text-shadow: 0 0 8px rgba(255, 46, 99, 0.6), 0 0 24px rgba(255, 46, 99, 0.3);
+.glow-amber {
+  text-shadow: 0 0 8px rgba(255, 182, 39, 0.6), 0 0 24px rgba(255, 182, 39, 0.3);
 }
-.box-glow-neon {
-  box-shadow: 0 0 0 1px rgba(200, 255, 0, 0.6),
-    0 0 24px -4px rgba(200, 255, 0, 0.5), inset 0 0 24px -10px rgba(200, 255, 0, 0.25);
+.box-glow-brand {
+  box-shadow: 0 0 0 1px rgba(239, 66, 62, 0.65),
+    0 0 24px -4px rgba(239, 66, 62, 0.5), inset 0 0 24px -10px rgba(239, 66, 62, 0.25);
 }
-.box-glow-magenta {
-  box-shadow: 0 0 0 1px rgba(255, 46, 99, 0.6),
-    0 0 24px -4px rgba(255, 46, 99, 0.5);
+.box-glow-amber {
+  box-shadow: 0 0 0 1px rgba(255, 182, 39, 0.6),
+    0 0 24px -4px rgba(255, 182, 39, 0.5);
 }
 
 /* Bracket frame */
@@ -99,13 +99,13 @@ body {
   border-top: none;
 }
 
-/* Animated gradient bar fill */
+/* Animated gradient bar fill (brand red with subtle highlight) */
 .bar-fill {
   background: linear-gradient(
     90deg,
-    var(--neon) 0%,
-    var(--neon) 60%,
-    #d8ff4c 100%
+    var(--brand) 0%,
+    var(--brand) 60%,
+    #ff6963 100%
   );
   background-size: 200% 100%;
   animation: shimmer-bar 3s linear infinite;

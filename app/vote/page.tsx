@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSupabase, type Poll } from "@/lib/supabase";
 import { getVoterId, getVotedOption, setVotedOption } from "@/lib/voter";
+import { Brand, BackHomeButton } from "@/components/Brand";
 
 type Counts = Record<number, number>;
 
@@ -174,7 +175,7 @@ export default function VotePage() {
       <div className="mx-auto w-full max-w-md">
         <div className="mb-6 flex items-center justify-between text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
           <span className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-magenta" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
             LIVE POLL
           </span>
           <span>
@@ -190,7 +191,7 @@ export default function VotePage() {
         </h1>
 
         {error && (
-          <div className="mt-4 border border-magenta/60 bg-magenta/10 p-3 text-xs text-magenta">
+          <div className="mt-4 border border-amber/60 bg-amber/10 p-3 text-xs text-amber">
             ⚠ {error}
           </div>
         )}
@@ -208,10 +209,10 @@ export default function VotePage() {
                 disabled={hasVoted || submitting}
                 className={`group relative block w-full overflow-hidden border p-4 text-left transition ${
                   isMine
-                    ? "border-neon bg-neon/10 box-glow-neon"
+                    ? "border-brand bg-brand/10 box-glow-brand"
                     : hasVoted
                     ? "border-white/10 bg-ink-900"
-                    : "border-white/15 bg-ink-900 hover:border-neon hover:bg-neon/5"
+                    : "border-white/15 bg-ink-900 hover:border-brand hover:bg-brand/5"
                 } ${
                   !hasVoted && !submitting
                     ? "cursor-pointer"
@@ -222,7 +223,7 @@ export default function VotePage() {
                 {/* Progress bar fill behind */}
                 {hasVoted && (
                   <div
-                    className="absolute inset-y-0 left-0 bg-neon/15 transition-[width] duration-700 ease-out"
+                    className="absolute inset-y-0 left-0 bg-brand/15 transition-[width] duration-700 ease-out"
                     style={{ width: `${pct}%` }}
                   />
                 )}
@@ -231,14 +232,14 @@ export default function VotePage() {
                   <div className="flex min-w-0 items-center gap-3">
                     <span
                       className={`font-mono text-xs ${
-                        isMine ? "text-neon" : "text-ink-400"
+                        isMine ? "text-brand" : "text-ink-400"
                       }`}
                     >
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                     <span
                       className={`truncate font-head text-xl uppercase tracking-wide ${
-                        isMine ? "text-neon glow-neon" : "text-white"
+                        isMine ? "text-brand glow-brand" : "text-white"
                       }`}
                     >
                       {opt}
@@ -252,14 +253,14 @@ export default function VotePage() {
                         </span>
                         <span
                           className={`font-head text-2xl ${
-                            isMine ? "text-neon glow-neon" : "text-white"
+                            isMine ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
                           {pct}%
                         </span>
                       </>
                     ) : (
-                      <span className="text-xl text-ink-400 transition group-hover:text-neon group-hover:translate-x-0.5">
+                      <span className="text-xl text-ink-400 transition group-hover:text-brand group-hover:translate-x-0.5">
                         →
                       </span>
                     )}
@@ -272,7 +273,7 @@ export default function VotePage() {
 
         {myVote !== null && (
           <div
-            className="mt-8 border-l-2 border-neon pl-4"
+            className="mt-8 border-l-2 border-brand pl-4"
             style={{ animation: "rise .5s .3s both" }}
           >
             <div className="text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
@@ -285,7 +286,7 @@ export default function VotePage() {
         )}
 
         {submitting && (
-          <div className="mt-6 text-center font-mono text-xs uppercase tracking-[0.3em] text-neon animate-pulse">
+          <div className="mt-6 text-center font-mono text-xs uppercase tracking-[0.3em] text-brand animate-pulse">
             INVIO...
           </div>
         )}
@@ -302,21 +303,19 @@ function Wrapper({ children }: { children: React.ReactNode }) {
         style={{
           width: 400,
           height: 400,
-          background: "var(--neon)",
+          background: "var(--brand)",
           top: "-100px",
           right: "-100px",
           opacity: 0.25,
         }}
       />
-      <header className="mb-10 flex items-center justify-between">
-        <a
-          href="/"
-          className="font-display text-xl text-neon glow-neon hover:opacity-80"
-        >
-          ARKA
-        </a>
-        <div className="text-[0.6rem] uppercase tracking-[0.3em] text-ink-400">
-          // VOTE.PANEL
+      <header className="mb-10 flex items-center justify-between gap-3">
+        <Brand size="sm" />
+        <div className="flex items-center gap-3">
+          <span className="hidden text-[0.6rem] uppercase tracking-[0.3em] text-ink-400 sm:inline">
+            // VOTE.PANEL
+          </span>
+          <BackHomeButton />
         </div>
       </header>
       <div className="flex flex-1 items-center">{children}</div>
@@ -327,7 +326,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 function LoadingState() {
   return (
     <div className="mx-auto text-center">
-      <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-neon border-t-transparent" />
+      <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-brand border-t-transparent" />
       <div className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-ink-400">
         CARICAMENTO...
       </div>
@@ -347,10 +346,10 @@ function WaitingState() {
       </h1>
       <p className="mt-4 font-mono text-sm text-ink-300">
         Resta su questa pagina. Il prossimo sondaggio apparirà{" "}
-        <span className="text-neon">automaticamente</span> appena Arkanight lo
+        <span className="text-brand">automaticamente</span> appena Arkanight lo
         lancia dal vivo.
       </p>
-      <div className="mt-8 font-mono text-xs uppercase tracking-[0.3em] text-neon animate-flicker">
+      <div className="mt-8 font-mono text-xs uppercase tracking-[0.3em] text-brand animate-flicker">
         ⏳ STAY TUNED
       </div>
     </div>
