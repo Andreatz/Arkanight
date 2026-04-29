@@ -16,7 +16,6 @@ export default function DisplayPage() {
   const [now, setNow] = useState<string>("");
   const flashRef = useRef<HTMLDivElement>(null);
 
-  // Build QR
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = `${window.location.origin}/vote`;
@@ -29,7 +28,6 @@ export default function DisplayPage() {
     }).then(setQrDataUrl);
   }, []);
 
-  // Clock
   useEffect(() => {
     const tick = () => {
       const d = new Date();
@@ -43,7 +41,6 @@ export default function DisplayPage() {
     return () => clearInterval(id);
   }, []);
 
-  // Load active poll + counts
   const loadActive = async () => {
     const { data } = await supabase
       .from("polls")
@@ -72,7 +69,6 @@ export default function DisplayPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Realtime: react to vote inserts on the active poll
   useEffect(() => {
     if (!poll) return;
     const ch = supabase
@@ -88,7 +84,6 @@ export default function DisplayPage() {
         (payload) => {
           const idx = (payload.new as { option_index: number }).option_index;
           setCounts((prev) => ({ ...prev, [idx]: (prev[idx] ?? 0) + 1 }));
-          // Flash animation
           if (flashRef.current) {
             flashRef.current.classList.remove("opacity-0");
             flashRef.current.classList.add("opacity-100");
@@ -105,7 +100,6 @@ export default function DisplayPage() {
     };
   }, [poll, supabase]);
 
-  // Realtime: react to poll activation changes
   useEffect(() => {
     const ch = supabase
       .channel("display-polls")
@@ -128,7 +122,7 @@ export default function DisplayPage() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-ink-950">
-      {/* Flash overlay on new vote */}
+      {/* Flash overlay */}
       <div
         ref={flashRef}
         className="pointer-events-none absolute inset-0 z-50 bg-brand/10 opacity-0 transition-opacity duration-150"
@@ -172,11 +166,7 @@ export default function DisplayPage() {
       <header className="relative z-10 flex items-center justify-between border-b border-white/10 px-12 py-6">
         <div className="flex items-center gap-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Arkanight"
-            className="h-16 w-16 shrink-0"
-          />
+          <img src="/logo.png" alt="Arkanight" className="h-16 w-16 shrink-0" />
           <h1 className="font-display text-5xl text-brand glow-brand animate-flicker">
             ARKANIGHT
           </h1>
@@ -212,15 +202,13 @@ export default function DisplayPage() {
             <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.95] text-white">
               {poll.question}
             </h2>
-            
+
             {/* Placeholder immagine sondaggio */}
             <div className="mt-6 w-full flex justify-center">
               <div className="h-48 w-full max-w-xl border border-white/10 bg-ink-900 flex items-center justify-center text-ink-400 text-xs uppercase tracking-[0.2em]">
                 // IMMAGINE SONDAGGIO
               </div>
             </div>
-            
-            <div className="mt-10 flex-1 space-y-5 overflow-hidden">
 
             <div className="mt-10 flex-1 space-y-5 overflow-hidden">
               {poll.options.map((opt, idx) => {
