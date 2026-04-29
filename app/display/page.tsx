@@ -121,7 +121,7 @@ export default function DisplayPage() {
   );
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-ink-950">
+    <main className="relative min-h-screen w-screen overflow-y-auto bg-ink-950">
       {/* Flash overlay */}
       <div
         ref={flashRef}
