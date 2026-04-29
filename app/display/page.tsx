@@ -199,7 +199,7 @@ export default function DisplayPage() {
               <span>RISPONDI DAL TUO TELEFONO</span>
             </div>
 
-            <h2 className="font-head text-[clamp(1rem,2vw,2rem)] uppercase leading-[0.95] text-white" text-center>
+            <h2 className="font-head text-[clamp(1rem,2vw,2rem)] uppercase leading-[0.95] text-white text-center">
               {poll.question}
             </h2>
 
@@ -240,7 +240,7 @@ export default function DisplayPage() {
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <span
-                          className={`font-head text-3xl uppercase tracking-wide ${
+                          className={`font-head text-xl uppercase tracking-wide ${
                             isLeading ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
@@ -249,7 +249,7 @@ export default function DisplayPage() {
                       </div>
                       <div className="flex items-baseline gap-4">
                         <span
-                          className={`font-head text-4xl tabular-nums ${
+                          className={`font-head text-2xl tabular-nums ${
                             isLeading ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
