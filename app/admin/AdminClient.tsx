@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabase, type Poll } from "@/lib/supabase";
 
 type Counts = Record<string, Record<number, number>>;
@@ -12,7 +12,6 @@ export default function AdminClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Form state
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState<string[]>(["", ""]);
   const [creating, setCreating] = useState(false);
@@ -20,15 +19,9 @@ export default function AdminClient() {
   async function refresh() {
     setLoading(true);
     const r = await fetch("/api/admin/polls", { cache: "no-store" });
-    if (!r.ok) {
-      setError("Sessione scaduta");
-      setLoading(false);
-      return;
-    }
+    if (!r.ok) { setError("Sessione scaduta"); setLoading(false); return; }
     const { polls } = (await r.json()) as { polls: Poll[] };
     setPolls(polls ?? []);
-
-    // Fetch counts for all polls
     if (polls?.length) {
       const ids = polls.map((p) => p.id);
       const { data: votes } = await supabase
@@ -45,38 +38,23 @@ export default function AdminClient() {
     setLoading(false);
   }
 
-  useEffect(() => {
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
-  // Realtime votes for live counts
   useEffect(() => {
     const ch = supabase
       .channel("admin-votes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "votes" },
-        (payload) => {
-          const v = payload.new as { poll_id: string; option_index: number };
-          setCounts((prev) => {
-            const next = { ...prev };
-            next[v.poll_id] = { ...(next[v.poll_id] ?? {}) };
-            next[v.poll_id][v.option_index] =
-              (next[v.poll_id][v.option_index] ?? 0) + 1;
-            return next;
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "votes" },
-        () => refresh()
-      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "votes" }, (payload) => {
+        const v = payload.new as { poll_id: string; option_index: number };
+        setCounts((prev) => {
+          const next = { ...prev };
+          next[v.poll_id] = { ...(next[v.poll_id] ?? {}) };
+          next[v.poll_id][v.option_index] = (next[v.poll_id][v.option_index] ?? 0) + 1;
+          return next;
+        });
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "votes" }, () => refresh())
       .subscribe();
-    return () => {
-      supabase.removeChannel(ch);
-    };
+    return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -91,40 +69,47 @@ export default function AdminClient() {
       body: JSON.stringify({ question: question.trim(), options: cleaned }),
     });
     const j = await r.json();
-    if (!r.ok) {
-      setError(j.error ?? "Errore");
-    } else {
-      setQuestion("");
-      setOptions(["", ""]);
-      await refresh();
-    }
+    if (!r.ok) { setError(j.error ?? "Errore"); }
+    else { setQuestion(""); setOptions(["", ""]); await refresh(); }
     setCreating(false);
   }
 
-  async function action(id: string, action: "activate" | "deactivate" | "reset") {
-    if (action === "reset" && !confirm("Azzerare tutti i voti di questo sondaggio?")) return;
+  async function action(id: string, act: "activate" | "deactivate" | "reset") {
+    if (act === "reset" && !confirm("Azzerare tutti i voti di questo sondaggio?")) return;
     const r = await fetch(`/api/admin/polls/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action: act }),
     });
-    if (!r.ok) {
-      const j = await r.json().catch(() => ({}));
-      setError(j.error ?? "Errore");
-      return;
-    }
+    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
     refresh();
   }
 
   async function deletePoll(id: string) {
     if (!confirm("Eliminare definitivamente il sondaggio e tutti i suoi voti?")) return;
     const r = await fetch(`/api/admin/polls/${id}`, { method: "DELETE" });
-    if (!r.ok) {
-      const j = await r.json().catch(() => ({}));
-      setError(j.error ?? "Errore");
-      return;
-    }
+    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
     refresh();
+  }
+
+  async function uploadImage(id: string, file: File) {
+    const fd = new FormData();
+    fd.append("file", file);
+    const r = await fetch(`/api/admin/polls/${id}/image`, { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) { setError(j.error ?? "Errore upload"); return; }
+    // Aggiorna localmente senza refetch completo
+    setPolls((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, image_url: j.url } : p))
+    );
+  }
+
+  async function removeImage(id: string) {
+    const r = await fetch(`/api/admin/polls/${id}/image`, { method: "DELETE" });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
+    setPolls((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, image_url: null } : p))
+    );
   }
 
   async function logout() {
@@ -136,9 +121,7 @@ export default function AdminClient() {
     <div className="mx-auto max-w-5xl">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
-            Benvenuto nel
-          </div>
+          <div className="text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">Benvenuto nel</div>
           <h1 className="mt-1 font-head text-5xl uppercase text-white sm:text-6xl">
             <span className="text-brand glow-brand">CONTROL</span> ROOM
           </h1>
@@ -163,12 +146,9 @@ export default function AdminClient() {
           <span className="text-brand">+</span>
           NUOVO SONDAGGIO
         </div>
-
         <form onSubmit={createPoll} className="space-y-5">
           <div>
-            <label className="block text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
-              Domanda
-            </label>
+            <label className="block text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">Domanda</label>
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -178,7 +158,6 @@ export default function AdminClient() {
               required
             />
           </div>
-
           <div>
             <label className="block text-[0.65rem] uppercase tracking-[0.3em] text-ink-400">
               Opzioni ({options.length}/8)
@@ -191,11 +170,7 @@ export default function AdminClient() {
                   </span>
                   <input
                     value={o}
-                    onChange={(e) => {
-                      const next = [...options];
-                      next[i] = e.target.value;
-                      setOptions(next);
-                    }}
+                    onChange={(e) => { const next = [...options]; next[i] = e.target.value; setOptions(next); }}
                     maxLength={60}
                     placeholder={`Opzione ${i + 1}`}
                     className="flex-1 border border-white/15 bg-ink-950 px-4 py-2.5 font-mono text-white outline-none transition focus:border-brand"
@@ -205,7 +180,6 @@ export default function AdminClient() {
                       type="button"
                       onClick={() => setOptions(options.filter((_, j) => j !== i))}
                       className="border border-white/15 px-3 text-ink-400 hover:border-amber hover:text-amber"
-                      aria-label="Rimuovi"
                     >
                       ×
                     </button>
@@ -223,7 +197,6 @@ export default function AdminClient() {
               </button>
             )}
           </div>
-
           <button
             type="submit"
             disabled={creating}
@@ -240,12 +213,8 @@ export default function AdminClient() {
           <h2 className="font-head text-3xl uppercase text-white">
             <span className="text-brand">//</span> SONDAGGI
           </h2>
-          <a
-            href="/display"
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs uppercase tracking-[0.25em] text-ink-300 hover:text-brand"
-          >
+          <a href="/display" target="_blank" rel="noreferrer"
+            className="text-xs uppercase tracking-[0.25em] text-ink-300 hover:text-brand">
             Apri display ↗
           </a>
         </div>
@@ -269,6 +238,8 @@ export default function AdminClient() {
                 onDeactivate={() => action(p.id, "deactivate")}
                 onReset={() => action(p.id, "reset")}
                 onDelete={() => deletePoll(p.id)}
+                onUploadImage={(file) => uploadImage(p.id, file)}
+                onRemoveImage={() => removeImage(p.id)}
               />
             ))}
           </div>
@@ -285,6 +256,8 @@ function PollRow({
   onDeactivate,
   onReset,
   onDelete,
+  onUploadImage,
+  onRemoveImage,
 }: {
   poll: Poll;
   counts: Record<number, number>;
@@ -292,16 +265,27 @@ function PollRow({
   onDeactivate: () => void;
   onReset: () => void;
   onDelete: () => void;
+  onUploadImage: (file: File) => Promise<void>;
+  onRemoveImage: () => Promise<void>;
 }) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    await onUploadImage(file);
+    setUploading(false);
+    // Reset input so stesso file può essere riselezionato
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
   return (
-    <div
-      className={`border bg-ink-900 p-5 transition ${
-        poll.is_active
-          ? "border-brand box-glow-brand"
-          : "border-white/10"
-      }`}
-    >
+    <div className={`border bg-ink-900 p-5 transition ${
+      poll.is_active ? "border-brand box-glow-brand" : "border-white/10"
+    }`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="mb-1 flex items-center gap-3 text-[0.65rem] uppercase tracking-[0.3em]">
@@ -317,39 +301,76 @@ function PollRow({
               {new Date(poll.created_at).toLocaleString("it-IT")}
             </span>
           </div>
-          <h3 className="font-head text-2xl uppercase text-white">
-            {poll.question}
-          </h3>
+          <h3 className="font-head text-2xl uppercase text-white">{poll.question}</h3>
         </div>
+
         <div className="flex flex-wrap gap-2">
           {poll.is_active ? (
-            <button
-              onClick={onDeactivate}
-              className="border border-amber/60 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-amber hover:bg-amber/10"
-            >
+            <button onClick={onDeactivate}
+              className="border border-amber/60 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-amber hover:bg-amber/10">
               ◼ Stop
             </button>
           ) : (
-            <button
-              onClick={onActivate}
-              className="border border-brand bg-brand px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-950 hover:bg-brand/90"
-            >
+            <button onClick={onActivate}
+              className="border border-brand bg-brand px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-950 hover:bg-brand/90">
               ▶ Attiva
             </button>
           )}
-          <button
-            onClick={onReset}
-            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-bone hover:text-bone"
-          >
+          <button onClick={onReset}
+            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-bone hover:text-bone">
             ↻ Reset voti
           </button>
-          <button
-            onClick={onDelete}
-            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-amber hover:text-amber"
-          >
+          <button onClick={onDelete}
+            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-amber hover:text-amber">
             ✕
           </button>
         </div>
+      </div>
+
+      {/* Sezione immagine */}
+      <div className="mb-4 flex items-center gap-4 border-t border-white/5 pt-4">
+        {poll.image_url ? (
+          <>
+            <img
+              src={poll.image_url}
+              alt="Immagine sondaggio"
+              className="h-14 w-14 rounded object-cover border border-white/10 shrink-0"
+            />
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-brand hover:text-brand disabled:opacity-50"
+              >
+                {uploading ? "Caricamento..." : "↺ Cambia"}
+              </button>
+              <button
+                type="button"
+                onClick={onRemoveImage}
+                className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-amber hover:text-amber"
+              >
+                ✕ Rimuovi
+              </button>
+            </div>
+          </>
+        ) : (
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-brand hover:text-brand disabled:opacity-50"
+          >
+            {uploading ? "Caricamento..." : "📎 Allega immagine"}
+          </button>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -359,9 +380,7 @@ function PollRow({
           return (
             <div key={i} className="flex items-center justify-between border border-white/5 bg-ink-950 px-3 py-2">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-xs text-ink-400">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <span className="font-mono text-xs text-ink-400">{String(i + 1).padStart(2, "0")}</span>
                 <span className="truncate text-sm text-ink-300">{opt}</span>
               </div>
               <div className="flex items-baseline gap-3">
