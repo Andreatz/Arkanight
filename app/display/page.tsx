@@ -199,7 +199,7 @@ export default function DisplayPage() {
               <span>RISPONDI DAL TUO TELEFONO</span>
             </div>
 
-            <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.95] text-white">
+            <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.55] text-white">
               {poll.question}
             </h2>
 
@@ -209,7 +209,7 @@ export default function DisplayPage() {
                 <img
                   src={poll.image_url}
                   alt="Immagine sondaggio"
-                  className="h-48 w-full max-w-xl object-cover border border-white/10"
+                  className="h-200 w-full max-w-xl object-cover border border-white/10"
                 />
               ) : (
                 <div className="h-48 w-full max-w-xl border border-white/10 bg-ink-900 flex items-center justify-center text-ink-400 text-xs uppercase tracking-[0.2em]">
