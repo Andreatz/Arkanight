@@ -121,7 +121,7 @@ export default function DisplayPage() {
   );
 
   return (
-    <main className="relative min-h-screen w-screen overflow-y-auto bg-ink-950">
+    <main className="relative h-screen w-screen overflow-hidden bg-ink-950">
       {/* Flash overlay */}
       <div
         ref={flashRef}
@@ -192,12 +192,6 @@ export default function DisplayPage() {
         <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-10">
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
-            <div className="mb-6 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-ink-400">
-              <span className="border border-amber/40 bg-amber/10 px-3 py-1 text-amber">
-                LIVE POLL
-              </span>
-              <span>RISPONDI DAL TUO TELEFONO</span>
-            </div>
 
             <h2 className="font-head text-[clamp(1rem,2vw,2rem)] uppercase leading-[0.95] text-white text-center">
               {poll.question}
@@ -274,6 +268,14 @@ export default function DisplayPage() {
 
           {/* RIGHT: QR */}
           <div className="col-span-4 flex flex-col items-center justify-center border-l border-white/10 pl-10">
+          
+            <div className="mb-6 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-ink-400">
+              <span className="border border-amber/40 bg-amber/10 px-3 py-1 text-amber">
+                LIVE POLL
+              </span>
+              <span>RISPONDI DAL TUO TELEFONO</span>
+            </div>
+
             <div className="text-center">
               <div className="mb-6 text-xs uppercase tracking-[0.3em] text-ink-400">
                 // SCANSIONA PER VOTARE
