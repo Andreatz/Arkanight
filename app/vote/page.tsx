@@ -178,9 +178,6 @@ export default function VotePage() {
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
             LIVE POLL
           </span>
-          <span>
-            {total} {total === 1 ? "VOTO" : "VOTI"}
-          </span>
         </div>
 
         <h1
@@ -248,9 +245,6 @@ export default function VotePage() {
                   <div className="flex shrink-0 items-center gap-3">
                     {hasVoted ? (
                       <>
-                        <span className="font-mono text-xs text-ink-300">
-                          {c}
-                        </span>
                         <span
                           className={`font-head text-2xl ${
                             isMine ? "text-brand glow-brand" : "text-white"
