@@ -199,7 +199,7 @@ export default function DisplayPage() {
               <span>RISPONDI DAL TUO TELEFONO</span>
             </div>
 
-            <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.55] text-white">
+            <h2 className="font-head text-[clamp(1rem,2vw,2rem)] uppercase leading-[0.95] text-white" text-center>
               {poll.question}
             </h2>
 
