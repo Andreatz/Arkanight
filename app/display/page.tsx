@@ -268,16 +268,6 @@ export default function DisplayPage() {
               })}
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
-              <div className="text-xs uppercase tracking-[0.3em] text-ink-400">
-                TOTALE VOTI
-              </div>
-              <div className="font-head text-5xl text-brand glow-brand tabular-nums">
-                {String(total).padStart(3, "0")}
-              </div>
-            </div>
-          </div>
-
           {/* RIGHT: QR */}
           <div className="col-span-4 flex flex-col items-center justify-center border-l border-white/10 pl-10">
             <div className="text-center">
