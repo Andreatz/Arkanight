@@ -189,7 +189,7 @@ export default function DisplayPage() {
 
       {/* Body */}
       {poll ? (
-        <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-10">
+        <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-4">
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
 
