@@ -212,6 +212,15 @@ export default function DisplayPage() {
             <h2 className="font-head text-[clamp(2.5rem,5vw,5rem)] uppercase leading-[0.95] text-white">
               {poll.question}
             </h2>
+            
+            {/* Placeholder immagine sondaggio */}
+            <div className="mt-6 w-full flex justify-center">
+              <div className="h-48 w-full max-w-xl border border-white/10 bg-ink-900 flex items-center justify-center text-ink-400 text-xs uppercase tracking-[0.2em]">
+                // IMMAGINE SONDAGGIO
+              </div>
+            </div>
+            
+            <div className="mt-10 flex-1 space-y-5 overflow-hidden">
 
             <div className="mt-10 flex-1 space-y-5 overflow-hidden">
               {poll.options.map((opt, idx) => {
