@@ -248,9 +248,6 @@ export default function DisplayPage() {
                         </span>
                       </div>
                       <div className="flex items-baseline gap-4">
-                        <span className="font-mono text-sm text-ink-400">
-                          {c} {c === 1 ? "voto" : "voti"}
-                        </span>
                         <span
                           className={`font-head text-4xl tabular-nums ${
                             isLeading ? "text-brand glow-brand" : "text-white"
