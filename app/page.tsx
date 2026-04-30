@@ -191,8 +191,7 @@ export default function HomePage() {
         <div className="marquee-track flex whitespace-nowrap font-head text-2xl uppercase tracking-wider">
           {Array.from({ length: 8 }).map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-6">
-              ARKANIGHT LIVE <span>★</span> VOTA SUL SITO <span>★</span> COMICON
-              EDITION <span>★</span>
+              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON <span>★</span>
             </span>
           ))}
         </div>
@@ -203,7 +202,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 text-xs uppercase tracking-[0.25em] text-ink-400 sm:flex-row sm:items-center">
           <div>© 2026 ARKANIGHT — ALL RIGHTS RESERVED</div>
           <div className="font-mono text-ink-500">
-            BUILT WITH NEXT.JS · SUPABASE · VERCEL
+            BUILT BY ANDREATZ
           </div>
         </div>
       </footer>
