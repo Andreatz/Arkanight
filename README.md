@@ -1,6 +1,6 @@
 # ARKANIGHT — Sito Live Voting
 
-Brand identity hub + sistema di sondaggi in tempo reale stile Mentimeter, costruito con **Next.js 15 + Supabase + Vercel**.
+Brand identity hub + sistema di sondaggi in tempo reale stile Mentimeter, costruito con **Next.js 15 + Supabase + Vercel**
 
 ## Pagine
 
