@@ -106,9 +106,6 @@ export default function HomePage() {
               Benvenuti nella tana digitale di{" "}
               <span className="text-brand">Arkanight</span>. IL MIGLIOR TRIO DEL WEB!
               Siamo tre millennial di Roma con un talento naturale nel non essere mai d'accordo.
-
-
-
               Se vuoi esplorare i nostri contenuti, puoi cominciare dalla Home o dalla sezione Podcast.
               Seguici in live ogni sera alle 21 su Twitch, e su tutti gli altri social dai link qui sotto!
             </p>
@@ -191,7 +188,8 @@ export default function HomePage() {
         <div className="marquee-track flex whitespace-nowrap font-head text-2xl uppercase tracking-wider">
           {Array.from({ length: 8 }).map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-6">
-              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON <span>★</span>
+              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON 2026 <span>★</span>
+
             </span>
           ))}
         </div>
