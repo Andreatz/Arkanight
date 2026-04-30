@@ -234,3 +234,4 @@ function Wrapper({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 items-center">{children}</div>
     </main>
   );
+}
