@@ -327,52 +327,6 @@ function PollRow({
         </div>
       </div>
 
-      {/* Sezione immagine */}
-      <div className="mb-4 flex items-center gap-4 border-t border-white/5 pt-4">
-        {poll.image_url ? (
-          <>
-            <img
-              src={poll.image_url}
-              alt="Immagine sondaggio"
-              className="h-14 w-14 rounded object-cover border border-white/10 shrink-0"
-            />
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                disabled={uploading}
-                onClick={() => fileInputRef.current?.click()}
-                className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-300 hover:border-brand hover:text-brand disabled:opacity-50"
-              >
-                {uploading ? "Caricamento..." : "↺ Cambia"}
-              </button>
-              <button
-                type="button"
-                onClick={onRemoveImage}
-                className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-amber hover:text-amber"
-              >
-                ✕ Rimuovi
-              </button>
-            </div>
-          </>
-        ) : (
-          <button
-            type="button"
-            disabled={uploading}
-            onClick={() => fileInputRef.current?.click()}
-            className="border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.25em] text-ink-400 hover:border-brand hover:text-brand disabled:opacity-50"
-          >
-            {uploading ? "Caricamento..." : "📎 Allega immagine"}
-          </button>
-        )}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </div>
-
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {poll.options.map((opt, i) => {
           const c = counts[i] ?? 0;
