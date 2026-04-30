@@ -106,6 +106,9 @@ export default function HomePage() {
               Benvenuti nella tana digitale di{" "}
               <span className="text-brand">Arkanight</span>. IL MIGLIOR TRIO DEL WEB!
               Siamo tre millennial di Roma con un talento naturale nel non essere mai d'accordo.
+
+
+
               Se vuoi esplorare i nostri contenuti, puoi cominciare dalla Home o dalla sezione Podcast.
               Seguici in live ogni sera alle 21 su Twitch, e su tutti gli altri social dai link qui sotto!
             </p>
@@ -188,7 +191,8 @@ export default function HomePage() {
         <div className="marquee-track flex whitespace-nowrap font-head text-2xl uppercase tracking-wider">
           {Array.from({ length: 8 }).map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-6">
-              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON 2026 <span>★</span>
+              ARKANIGHT LIVE <span>★</span> VOTA SUL SITO <span>★</span> COMICON
+              EDITION <span>★</span>
             </span>
           ))}
         </div>
@@ -199,7 +203,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 text-xs uppercase tracking-[0.25em] text-ink-400 sm:flex-row sm:items-center">
           <div>© 2026 ARKANIGHT — ALL RIGHTS RESERVED</div>
           <div className="font-mono text-ink-500">
-            BUILT BY ANDREATZ
+            BUILT WITH NEXT.JS · SUPABASE · VERCEL
           </div>
         </div>
       </footer>
@@ -233,4 +237,3 @@ function Wrapper({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 items-center">{children}</div>
     </main>
   );
-}
