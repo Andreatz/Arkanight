@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+mport { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 let _client: SupabaseClient | null = null;
 
@@ -23,7 +23,6 @@ export type Poll = {
   question: string;
   options: string[];
   is_active: boolean;
-  image_url?: string | null;  // ← aggiungi
   created_at: string;
 };
 
