@@ -8,6 +8,27 @@ import { getRequestErrorMessage } from "@/lib/errors";
 
 type Counts = Record<number, number>;
 
+const SOCIALS = [
+  {
+    label: "TWITCH",
+    handle: "arkanightlive",
+    url: "https://www.twitch.tv/arkanightlive",
+    color: "amber",
+  },
+  {
+    label: "YOUTUBE",
+    handle: "@arkanight",
+    url: "https://www.youtube.com/@arkanight",
+    color: "brand",
+  },
+  {
+    label: "INSTAGRAM",
+    handle: "@arkanightreal",
+    url: "https://www.instagram.com/arkanightreal/",
+    color: "bone",
+  },
+] as const;
+
 export default function DisplayPage() {
   const [supabase, setSupabase] = useState<ReturnType<typeof getSupabase> | null>(null);
   const [poll, setPoll] = useState<Poll | null>(null);
@@ -220,7 +241,7 @@ export default function DisplayPage() {
 
       {/* Body */}
       {poll ? (
-        <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-10">
+        <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 pb-24 pt-10">
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
 
@@ -267,7 +288,7 @@ export default function DisplayPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="relative h-5 overflow-hidden border border-white/10 bg-ink-900">
+                    <div className="relative h-8 overflow-hidden border border-white/10 bg-ink-900">
                       <div
                         className={`absolute inset-y-0 left-0 transition-[width] duration-700 ease-out ${
                           isLeading ? "bar-fill" : "bg-white/30"
@@ -321,7 +342,7 @@ export default function DisplayPage() {
           </div>
         </div>
       ) : (
-        <div className="relative z-10 flex h-[calc(100vh-94px)] flex-col items-center justify-center gap-8 px-12">
+        <div className="relative z-10 flex h-[calc(100vh-94px)] flex-col items-center justify-center gap-8 px-12 pb-24 pt-10">
           <div className="text-xs uppercase tracking-[0.3em] text-ink-400">
             // STANDBY
           </div>
@@ -351,6 +372,46 @@ export default function DisplayPage() {
           </div>
         </div>
       )}
+      <DisplaySocials />
     </main>
+  );
+}
+
+function DisplaySocials() {
+  return (
+    <footer className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-ink-950/90 px-12 py-4 backdrop-blur">
+      <div className="flex items-center justify-between gap-8">
+        <div className="font-head text-2xl uppercase tracking-wider text-white">
+          Seguici <span className="text-brand">live</span>
+        </div>
+        <div className="flex flex-1 items-center justify-end gap-5">
+          {SOCIALS.map((social, index) => (
+            <a
+              key={social.label}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-w-0 items-baseline gap-3 border border-white/10 bg-ink-900/80 px-4 py-2 transition hover:border-brand/60"
+              style={{ animation: `rise .5s ${0.15 + index * 0.08}s both` }}
+            >
+              <span
+                className={`font-head text-xl uppercase tracking-wider ${
+                  social.color === "brand"
+                    ? "text-brand"
+                    : social.color === "amber"
+                    ? "text-amber"
+                    : "text-bone"
+                }`}
+              >
+                {social.label}
+              </span>
+              <span className="font-mono text-sm text-ink-300 transition group-hover:text-white">
+                {social.handle}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
   );
 }
