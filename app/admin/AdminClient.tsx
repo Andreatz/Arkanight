@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getSupabase, type Poll } from "@/lib/supabase";
+import { getRequestErrorMessage } from "@/lib/errors";
 
 type Counts = Record<string, Record<number, number>>;
 
 export default function AdminClient() {
-  const supabase = useMemo(() => getSupabase(), []);
+  const [supabase, setSupabase] = useState<ReturnType<typeof getSupabase> | null>(null);
   const [polls, setPolls] = useState<Poll[]>([]);
   const [counts, setCounts] = useState<Counts>({});
   const [loading, setLoading] = useState(true);
@@ -16,31 +17,57 @@ export default function AdminClient() {
   const [options, setOptions] = useState<string[]>(["", ""]);
   const [creating, setCreating] = useState(false);
 
-  async function refresh() {
-    setLoading(true);
-    const r = await fetch("/api/admin/polls", { cache: "no-store" });
-    if (!r.ok) { setError("Sessione scaduta"); setLoading(false); return; }
-    const { polls } = (await r.json()) as { polls: Poll[] };
-    setPolls(polls ?? []);
-    if (polls?.length) {
-      const ids = polls.map((p) => p.id);
-      const { data: votes } = await supabase
-        .from("votes")
-        .select("poll_id, option_index")
-        .in("poll_id", ids);
-      const c: Counts = {};
-      votes?.forEach((v) => {
-        c[v.poll_id] ??= {};
-        c[v.poll_id][v.option_index] = (c[v.poll_id][v.option_index] ?? 0) + 1;
-      });
-      setCounts(c);
+  useEffect(() => {
+    try {
+      setSupabase(getSupabase());
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
     }
-    setLoading(false);
+  }, []);
+
+  async function refresh() {
+    try {
+      setLoading(true);
+      const r = await fetch("/api/admin/polls", { cache: "no-store" });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        setError(j.error ?? "Sessione scaduta");
+        setLoading(false);
+        return;
+      }
+      const { polls } = (await r.json()) as { polls: Poll[] };
+      setPolls(polls ?? []);
+      if (polls?.length && supabase) {
+        const ids = polls.map((p) => p.id);
+        const { data: votes, error: e } = await supabase
+          .from("votes")
+          .select("poll_id, option_index")
+          .in("poll_id", ids);
+        if (e) {
+          setError(e.message);
+          setLoading(false);
+          return;
+        }
+        const c: Counts = {};
+        votes?.forEach((v) => {
+          c[v.poll_id] ??= {};
+          c[v.poll_id][v.option_index] = (c[v.poll_id][v.option_index] ?? 0) + 1;
+        });
+        setCounts(c);
+      } else {
+        setCounts({});
+      }
+      setLoading(false);
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+      setLoading(false);
+    }
   }
 
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [supabase]);
 
   useEffect(() => {
+    if (!supabase) return;
     const ch = supabase
       .channel("admin-votes")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "votes" }, (payload) => {
@@ -56,65 +83,89 @@ export default function AdminClient() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   async function createPoll(e: React.FormEvent) {
     e.preventDefault();
     setCreating(true);
     setError(null);
-    const cleaned = options.map((o) => o.trim()).filter(Boolean);
-    const r = await fetch("/api/admin/polls", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: question.trim(), options: cleaned }),
-    });
-    const j = await r.json();
-    if (!r.ok) { setError(j.error ?? "Errore"); }
-    else { setQuestion(""); setOptions(["", ""]); await refresh(); }
+    try {
+      const cleaned = options.map((o) => o.trim()).filter(Boolean);
+      const r = await fetch("/api/admin/polls", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: question.trim(), options: cleaned }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setError(j.error ?? "Errore"); }
+      else { setQuestion(""); setOptions(["", ""]); await refresh(); }
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
     setCreating(false);
   }
 
   async function action(id: string, act: "activate" | "deactivate" | "reset") {
     if (act === "reset" && !confirm("Azzerare tutti i voti di questo sondaggio?")) return;
-    const r = await fetch(`/api/admin/polls/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: act }),
-    });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
-    refresh();
+    try {
+      const r = await fetch(`/api/admin/polls/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: act }),
+      });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
+      refresh();
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
   }
 
   async function deletePoll(id: string) {
     if (!confirm("Eliminare definitivamente il sondaggio e tutti i suoi voti?")) return;
-    const r = await fetch(`/api/admin/polls/${id}`, { method: "DELETE" });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
-    refresh();
+    try {
+      const r = await fetch(`/api/admin/polls/${id}`, { method: "DELETE" });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
+      refresh();
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
   }
 
   async function uploadImage(id: string, file: File) {
-    const fd = new FormData();
-    fd.append("file", file);
-    const r = await fetch(`/api/admin/polls/${id}/image`, { method: "POST", body: fd });
-    const j = await r.json();
-    if (!r.ok) { setError(j.error ?? "Errore upload"); return; }
-    // Aggiorna localmente senza refetch completo
-    setPolls((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, image_url: j.url } : p))
-    );
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch(`/api/admin/polls/${id}/image`, { method: "POST", body: fd });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setError(j.error ?? "Errore upload"); return; }
+      // Aggiorna localmente senza refetch completo
+      setPolls((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, image_url: j.url } : p))
+      );
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
   }
 
   async function removeImage(id: string) {
-    const r = await fetch(`/api/admin/polls/${id}/image`, { method: "DELETE" });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
-    setPolls((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, image_url: null } : p))
-    );
+    try {
+      const r = await fetch(`/api/admin/polls/${id}/image`, { method: "DELETE" });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error ?? "Errore"); return; }
+      setPolls((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, image_url: null } : p))
+      );
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
   }
 
   async function logout() {
-    await fetch("/api/admin/login", { method: "DELETE" });
-    window.location.reload();
+    try {
+      await fetch("/api/admin/login", { method: "DELETE" });
+      window.location.reload();
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
   }
 
   return (

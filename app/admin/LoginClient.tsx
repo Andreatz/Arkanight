@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getRequestErrorMessage } from "@/lib/errors";
 
 export default function LoginClient() {
   const [pw, setPw] = useState("");
@@ -11,16 +12,21 @@ export default function LoginClient() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const r = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pw }),
-    });
-    if (r.ok) {
-      window.location.reload();
-    } else {
-      const j = await r.json().catch(() => ({}));
-      setError(j.error ?? "Errore");
+    try {
+      const r = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw }),
+      });
+      if (r.ok) {
+        window.location.reload();
+      } else {
+        const j = await r.json().catch(() => ({}));
+        setError(j.error ?? "Errore");
+        setLoading(false);
+      }
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
       setLoading(false);
     }
   }

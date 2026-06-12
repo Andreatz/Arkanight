@@ -1,18 +1,23 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { getRequestErrorMessage } from "@/lib/errors";
 
 export async function GET() {
   if (!(await isAdmin())) {
     return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
   }
-  const sb = getSupabaseAdmin();
-  const { data, error } = await sb
-    .from("polls")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ polls: data });
+  try {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("polls")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ polls: data });
+  } catch (e) {
+    return NextResponse.json({ error: getRequestErrorMessage(e) }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
@@ -44,12 +49,16 @@ export async function POST(req: Request) {
     );
   }
 
-  const sb = getSupabaseAdmin();
-  const { data, error } = await sb
-    .from("polls")
-    .insert({ question, options, is_active: false })
-    .select()
-    .single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ poll: data });
+  try {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("polls")
+      .insert({ question, options, is_active: false })
+      .select()
+      .single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ poll: data });
+  } catch (e) {
+    return NextResponse.json({ error: getRequestErrorMessage(e) }, { status: 500 });
+  }
 }

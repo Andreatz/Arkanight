@@ -4,17 +4,27 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { getSupabase, type Poll } from "@/lib/supabase";
 import { BackHomeButton } from "@/components/Brand";
+import { getRequestErrorMessage } from "@/lib/errors";
 
 type Counts = Record<number, number>;
 
 export default function DisplayPage() {
-  const supabase = useMemo(() => getSupabase(), []);
+  const [supabase, setSupabase] = useState<ReturnType<typeof getSupabase> | null>(null);
   const [poll, setPoll] = useState<Poll | null>(null);
   const [counts, setCounts] = useState<Counts>({});
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [voteUrl, setVoteUrl] = useState<string>("");
   const [now, setNow] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const flashRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      setSupabase(getSupabase());
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -42,35 +52,49 @@ export default function DisplayPage() {
   }, []);
 
   const loadActive = async () => {
-    const { data } = await supabase
-      .from("polls")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1);
-    const active = (data?.[0] ?? null) as Poll | null;
-    setPoll(active);
-    if (active) {
-      const { data: votes } = await supabase
-        .from("votes")
-        .select("option_index")
-        .eq("poll_id", active.id);
-      const c: Counts = {};
-      votes?.forEach((v) => {
-        c[v.option_index] = (c[v.option_index] ?? 0) + 1;
-      });
-      setCounts(c);
-    } else {
-      setCounts({});
+    if (!supabase) return;
+    try {
+      const { data, error: e1 } = await supabase
+        .from("polls")
+        .select("*")
+        .eq("is_active", true)
+        .limit(1);
+      if (e1) {
+        setError(e1.message);
+        return;
+      }
+      const active = (data?.[0] ?? null) as Poll | null;
+      setPoll(active);
+      if (active) {
+        const { data: votes, error: e2 } = await supabase
+          .from("votes")
+          .select("option_index")
+          .eq("poll_id", active.id);
+        if (e2) {
+          setError(e2.message);
+          return;
+        }
+        const c: Counts = {};
+        votes?.forEach((v) => {
+          c[v.option_index] = (c[v.option_index] ?? 0) + 1;
+        });
+        setCounts(c);
+      } else {
+        setCounts({});
+      }
+      setError(null);
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
     }
   };
 
   useEffect(() => {
     loadActive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
-    if (!poll) return;
+    if (!supabase || !poll) return;
     const ch = supabase
       .channel(`display-votes-${poll.id}`)
       .on(
@@ -101,6 +125,7 @@ export default function DisplayPage() {
   }, [poll, supabase]);
 
   useEffect(() => {
+    if (!supabase) return;
     const ch = supabase
       .channel("display-polls")
       .on(
@@ -113,7 +138,7 @@ export default function DisplayPage() {
       supabase.removeChannel(ch);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   const total = useMemo(
     () => Object.values(counts).reduce((a, b) => a + b, 0),
@@ -187,13 +212,19 @@ export default function DisplayPage() {
         </div>
       </header>
 
+      {error && (
+        <div className="absolute left-12 right-12 top-28 z-20 border border-amber/60 bg-ink-950/95 px-4 py-3 font-mono text-sm text-amber">
+          {error}
+        </div>
+      )}
+
       {/* Body */}
       {poll ? (
         <div className="relative z-10 grid h-[calc(100vh-94px)] grid-cols-12 gap-10 px-12 py-10">
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
 
-            <h2 className="font-head text-[clamp(1rem,2vw,2rem)] uppercase leading-[0.95] text-white text-center">
+            <h2 className="font-head text-[clamp(2.25rem,4.5vw,5rem)] uppercase leading-[0.95] text-white text-center">
               {poll.question}
             </h2>
 
@@ -212,7 +243,7 @@ export default function DisplayPage() {
               )}
             </div>
 
-            <div className="mt-10 flex-1 space-y-5 overflow-hidden">
+            <div className="mt-10 flex-1 space-y-6 overflow-hidden">
               {poll.options.map((opt, idx) => {
                 const c = counts[idx] ?? 0;
                 const pct = total === 0 ? 0 : (c / total) * 100;
@@ -227,14 +258,14 @@ export default function DisplayPage() {
                     <div className="mb-2 flex items-baseline justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <span
-                          className={`font-mono text-sm ${
+                          className={`font-mono text-lg ${
                             isLeading ? "text-brand" : "text-ink-400"
                           }`}
                         >
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <span
-                          className={`font-head text-xl uppercase tracking-wide ${
+                          className={`font-head text-[clamp(1.75rem,2.4vw,3rem)] uppercase tracking-wide leading-none ${
                             isLeading ? "text-brand glow-brand" : "text-white"
                           }`}
                         >
@@ -243,15 +274,15 @@ export default function DisplayPage() {
                       </div>
                       <div className="flex items-baseline gap-4">
                         <span
-                          className={`font-head text-2xl tabular-nums ${
-                            isLeading ? "text-brand glow-brand" : "text-white"
+                          className={`font-head text-[clamp(2rem,3vw,3.75rem)] tabular-nums leading-none ${
+                            isLeading ? "text-brand glow-brand" : "text-purple"
                           }`}
                         >
                           {Math.round(pct)}%
                         </span>
                       </div>
                     </div>
-                    <div className="relative h-4 overflow-hidden border border-white/10 bg-ink-900">
+                    <div className="relative h-5 overflow-hidden border border-white/10 bg-ink-900">
                       <div
                         className={`absolute inset-y-0 left-0 transition-[width] duration-700 ease-out ${
                           isLeading ? "bar-fill" : "bg-white/30"

@@ -4,11 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { getSupabase, type Poll } from "@/lib/supabase";
 import { getVoterId, getVotedOption, setVotedOption } from "@/lib/voter";
 import { Brand, BackHomeButton } from "@/components/Brand";
+import { getRequestErrorMessage } from "@/lib/errors";
 
 type Counts = Record<number, number>;
 
 export default function VotePage() {
-  const supabase = useMemo(() => getSupabase(), []);
+  const [supabase, setSupabase] = useState<ReturnType<typeof getSupabase> | null>(null);
   const [poll, setPoll] = useState<Poll | null>(null);
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<Counts>({});
@@ -21,42 +22,64 @@ export default function VotePage() {
     [counts]
   );
 
+  useEffect(() => {
+    try {
+      setSupabase(getSupabase());
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+      setLoading(false);
+    }
+  }, []);
+
   // Initial load: get active poll + counts + my vote
   useEffect(() => {
+    if (!supabase) return;
+    const client = supabase;
     let alive = true;
 
     async function load() {
-      setLoading(true);
-      const { data: polls, error: e1 } = await supabase
-        .from("polls")
-        .select("*")
-        .eq("is_active", true)
-        .limit(1);
+      try {
+        setLoading(true);
+        const { data: polls, error: e1 } = await client
+          .from("polls")
+          .select("*")
+          .eq("is_active", true)
+          .limit(1);
 
-      if (!alive) return;
+        if (!alive) return;
 
-      if (e1) {
-        setError(e1.message);
+        if (e1) {
+          setError(e1.message);
+          setLoading(false);
+          return;
+        }
+
+        const active = (polls?.[0] ?? null) as Poll | null;
+        setPoll(active);
+
+        if (active) {
+          const { data: votes, error: e2 } = await client
+            .from("votes")
+            .select("option_index")
+            .eq("poll_id", active.id);
+          if (e2) {
+            setError(e2.message);
+            setLoading(false);
+            return;
+          }
+          const c: Counts = {};
+          votes?.forEach((v) => {
+            c[v.option_index] = (c[v.option_index] ?? 0) + 1;
+          });
+          setCounts(c);
+          setMyVote(getVotedOption(active.id));
+        }
         setLoading(false);
-        return;
+      } catch (e) {
+        if (!alive) return;
+        setError(getRequestErrorMessage(e));
+        setLoading(false);
       }
-
-      const active = (polls?.[0] ?? null) as Poll | null;
-      setPoll(active);
-
-      if (active) {
-        const { data: votes } = await supabase
-          .from("votes")
-          .select("option_index")
-          .eq("poll_id", active.id);
-        const c: Counts = {};
-        votes?.forEach((v) => {
-          c[v.option_index] = (c[v.option_index] ?? 0) + 1;
-        });
-        setCounts(c);
-        setMyVote(getVotedOption(active.id));
-      }
-      setLoading(false);
     }
 
     load();
@@ -67,9 +90,10 @@ export default function VotePage() {
 
   // Realtime subscriptions: votes changes + poll activation changes
   useEffect(() => {
-    if (!poll) return;
+    if (!supabase || !poll) return;
+    const client = supabase;
 
-    const votesChannel = supabase
+    const votesChannel = client
       .channel(`votes-${poll.id}`)
       .on(
         "postgres_changes",
@@ -87,57 +111,72 @@ export default function VotePage() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(votesChannel);
+      client.removeChannel(votesChannel);
     };
   }, [poll, supabase]);
 
   // Listen for new active polls
   useEffect(() => {
-    const ch = supabase
+    if (!supabase) return;
+    const client = supabase;
+    const ch = client
       .channel("polls-changes")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "polls" },
         async () => {
-          const { data } = await supabase
-            .from("polls")
-            .select("*")
-            .eq("is_active", true)
-            .limit(1);
-          const active = (data?.[0] ?? null) as Poll | null;
-          if (!active) {
-            setPoll(null);
-            setCounts({});
-            setMyVote(null);
-            return;
-          }
-          if (active.id !== poll?.id) {
-            setPoll(active);
-            setCounts({});
-            setMyVote(getVotedOption(active.id));
-            const { data: votes } = await supabase
-              .from("votes")
-              .select("option_index")
-              .eq("poll_id", active.id);
-            const c: Counts = {};
-            votes?.forEach((v) => {
-              c[v.option_index] = (c[v.option_index] ?? 0) + 1;
-            });
-            setCounts(c);
+          try {
+            const { data, error: e1 } = await client
+              .from("polls")
+              .select("*")
+              .eq("is_active", true)
+              .limit(1);
+            if (e1) {
+              setError(e1.message);
+              return;
+            }
+            const active = (data?.[0] ?? null) as Poll | null;
+            if (!active) {
+              setPoll(null);
+              setCounts({});
+              setMyVote(null);
+              return;
+            }
+            if (active.id !== poll?.id) {
+              setPoll(active);
+              setCounts({});
+              setMyVote(getVotedOption(active.id));
+              const { data: votes, error: e2 } = await client
+                .from("votes")
+                .select("option_index")
+                .eq("poll_id", active.id);
+              if (e2) {
+                setError(e2.message);
+                return;
+              }
+              const c: Counts = {};
+              votes?.forEach((v) => {
+                c[v.option_index] = (c[v.option_index] ?? 0) + 1;
+              });
+              setCounts(c);
+            }
+          } catch (e) {
+            setError(getRequestErrorMessage(e));
           }
         }
       )
       .subscribe();
     return () => {
-      supabase.removeChannel(ch);
+      client.removeChannel(ch);
     };
   }, [poll, supabase]);
 
   async function vote(optionIndex: number) {
-    if (!poll || submitting || myVote !== null) return;
+    if (!supabase || !poll || submitting || myVote !== null) return;
     setSubmitting(true);
     setError(null);
 
+    try {
     const voterId = getVoterId();
     const { error: e } = await supabase.from("votes").insert({
       poll_id: poll.id,
@@ -157,6 +196,9 @@ export default function VotePage() {
       setVotedOption(poll.id, optionIndex);
       setMyVote(optionIndex);
     }
+    } catch (e) {
+      setError(getRequestErrorMessage(e));
+    }
     setSubmitting(false);
   }
 
@@ -164,6 +206,10 @@ export default function VotePage() {
 
   if (loading) {
     return <Wrapper><LoadingState /></Wrapper>;
+  }
+
+  if (error && !poll) {
+    return <Wrapper><ErrorState message={error} /></Wrapper>;
   }
 
   if (!poll) {
@@ -346,6 +392,20 @@ function WaitingState() {
       <div className="mt-8 font-mono text-xs uppercase tracking-[0.3em] text-brand animate-flicker">
         ⏳ STAY TUNED
       </div>
+    </div>
+  );
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <div className="mx-auto w-full max-w-md text-center">
+      <div className="mb-6 inline-flex items-center gap-2 border border-amber/60 bg-amber/10 px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.3em] text-amber">
+        ERRORE
+      </div>
+      <h1 className="font-head text-4xl uppercase text-white">
+        Connessione non disponibile
+      </h1>
+      <p className="mt-4 font-mono text-sm text-ink-300">{message}</p>
     </div>
   );
 }
