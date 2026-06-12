@@ -89,7 +89,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <p className="mb-6 inline-flex items-center gap-3 border border-brand/40 bg-brand/5 px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.3em] text-brand">
             <span className="h-1.5 w-1.5 rounded-full bg-brand glow-brand" />
-            Streamer · Content Creator · Comicon Guest
+            Streamer · Content Creator
           </p>
 
           <h1 className="font-display text-[clamp(3.5rem,14vw,12rem)] leading-[0.85] tracking-tight">
@@ -188,7 +188,7 @@ export default function HomePage() {
         <div className="marquee-track flex whitespace-nowrap font-head text-2xl uppercase tracking-wider">
           {Array.from({ length: 8 }).map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-6">
-              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON 2026 <span>★</span>
+              ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span>
 
             </span>
           ))}

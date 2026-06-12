@@ -218,7 +218,6 @@ export default function DisplayPage() {
           </h1>
           <div className="border-l border-white/10 pl-6 text-xs uppercase tracking-[0.3em] text-ink-300">
             <div>LIVE BROADCAST</div>
-            <div className="mt-1 text-amber">// COMICON EDITION</div>
           </div>
         </div>
         <div className="flex items-center gap-8">

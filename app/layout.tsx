@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Sito ufficiale di Arkanight — streaming, contenuti e sondaggi live durante gli eventi.",
   applicationName: "Arkanight",
   authors: [{ name: "Arkanight" }],
-  keywords: ["arkanight", "streamer", "twitch", "comicon", "live", "voting"],
+  keywords: ["arkanight", "streamer", "twitch", "live", "voting"],
   openGraph: {
     title: "ARKANIGHT // LIVE",
     description: "Vota in diretta con Arkanight all'evento.",
