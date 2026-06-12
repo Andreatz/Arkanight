@@ -224,7 +224,7 @@ export default function DisplayPage() {
           {/* LEFT: Question + bars */}
           <div className="col-span-8 flex flex-col">
 
-            <h2 className="font-head text-[clamp(2.25rem,4.5vw,5rem)] uppercase leading-[0.95] text-white text-center">
+            <h2 className="font-head text-[clamp(2.25rem,4.5vw,5rem)] uppercase leading-[0.95] text-green text-center">
               {poll.question}
             </h2>
 
