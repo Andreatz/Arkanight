@@ -189,6 +189,7 @@ export default function HomePage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-6">
               ARKANIGHT <span>★</span> VOTA SUL SITO <span>★</span> COMICON 2026 <span>★</span>
+
             </span>
           ))}
         </div>

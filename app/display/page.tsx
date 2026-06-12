@@ -228,21 +228,6 @@ export default function DisplayPage() {
               {poll.question}
             </h2>
 
-            {/* Immagine sondaggio */}
-            <div className="mt-6 w-full flex justify-center">
-              {poll.image_url ? (
-                <img
-                  src={poll.image_url}
-                  alt="Immagine sondaggio"
-                  className="h-200 w-full max-w-xl object-cover border border-white/10"
-                />
-              ) : (
-                <div className="h-48 w-full max-w-xl border border-white/10 bg-ink-900 flex items-center justify-center text-ink-400 text-xs uppercase tracking-[0.2em]">
-                  // IMMAGINE SONDAGGIO
-                </div>
-              )}
-            </div>
-
             <div className="mt-10 flex-1 space-y-6 overflow-hidden">
               {poll.options.map((opt, idx) => {
                 const c = counts[idx] ?? 0;

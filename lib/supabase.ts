@@ -23,7 +23,6 @@ export type Poll = {
   question: string;
   options: string[];
   is_active: boolean;
-  image_url?: string | null;  // ← aggiungi
   created_at: string;
 };
 
